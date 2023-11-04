@@ -4,6 +4,7 @@ import { NextResponse } from "next/server"
 export default withAuth(
     function middleware(request: NextRequestWithAuth) {
         if (request.nextUrl.pathname.startsWith("/home")
+            && request.nextauth.token?.role !== "user"
             && request.nextauth.token?.role !== "admin") {
             return NextResponse.rewrite(
                 new URL("/denied", request.url)
@@ -11,6 +12,14 @@ export default withAuth(
         }
 
         if (request.nextUrl.pathname.startsWith("/settings")
+            && request.nextauth.token?.role !== "user"
+            && request.nextauth.token?.role !== "admin") {
+            return NextResponse.rewrite(
+                new URL("/denied", request.url)
+            )
+        }
+
+        if (request.nextUrl.pathname.startsWith("/dashboard")
             && request.nextauth.token?.role !== "admin") {
             return NextResponse.rewrite(
                 new URL("/denied", request.url)
@@ -24,4 +33,4 @@ export default withAuth(
     }
 )
 
-export const config = { matcher: ["/home", "/settings"] }
+export const config = { matcher: ["/home", "/settings", "/dashboard"] }
